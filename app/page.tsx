@@ -4,11 +4,14 @@ import { ArrowRight, ArrowUpRight, Search, ShoppingBag, Menu, X, Zap, ShieldChec
 import Link from "next/link";
 import { products, categories, formatEGP } from "../lib/products";
 import { addToCart, cartCount, readCart, type CartLine } from "../lib/cart";
+import {StoreControls,useStore} from "../components/store-provider";
 
 function RevealLine({text,italic=false}:{text:string;italic?:boolean}) {
  return <span className={italic?"reveal-line reveal-italic":"reveal-line"} aria-hidden="true">{Array.from(text).map((char,i)=><span className="reveal-mask" key={i}><span className="reveal-char" style={{animationDelay:`${180+i*38}ms`}}>{char===" "?"\u00a0":char}</span></span>)}</span>;
 }
 export default function Home() {
+ const {language,price,format}=useStore();
+ const ar=language==="ar";
  const [cart,setCart]=useState<CartLine[]>([]);
  const [menu,setMenu]=useState(false);
  const [query,setQuery]=useState("");
@@ -33,14 +36,14 @@ export default function Home() {
   <header className="header wrap commerce-header">
    <button className="iconbtn mobile" onClick={()=>setMenu(!menu)} aria-label="Toggle menu">{menu?<X/>:<Menu/>}</button>
    <Link className="logo" href="/">VOLT<span>.</span></Link>
-   <nav className={menu?"nav open":"nav"}><Link href="/shop">All products</Link><Link href="/shop?category=LED%20Bulbs">LED bulbs</Link><Link href="/shop?category=Decorative%20Lighting">Lighting</Link><Link href="/shop?category=Switches%20%26%20Sockets">Switches & sockets</Link><Link href="/shop?category=Protection%20%26%20Distribution">Protection</Link></nav>
-   <div className="head-actions"><Link className="bag" href="/cart"><ShoppingBag size={18}/><span>Cart ({count})</span></Link></div>
+   <nav className={menu?"nav open":"nav"}><Link href="/shop">{ar?"كل المنتجات":"All products"}</Link><Link href="/shop?category=LED%20Bulbs">{ar?"مصابيح LED":"LED bulbs"}</Link><Link href="/shop?category=Decorative%20Lighting">{ar?"الإضاءة":"Lighting"}</Link><Link href="/shop?category=Switches%20%26%20Sockets">{ar?"المفاتيح والمقابس":"Switches & sockets"}</Link><Link href="/shop?category=Protection%20%26%20Distribution">{ar?"الحماية والتوزيع":"Protection"}</Link></nav>
+   <div className="head-actions"><StoreControls/><Link className="bag" href="/cart"><ShoppingBag size={18}/><span>{ar?`السلة (${count})`:`Cart (${count})`}</span></Link></div>
   </header>
   <section className="shop-hero wrap">
    <div className="shop-hero-copy"><div className="eyebrow"><span className="dot"/> ELECTRICAL ESSENTIALS, ALL IN ONE PLACE</div>
-    <h1 aria-label="Everything your space needs."><RevealLine text="Everything your"/><br/><em><RevealLine text="space needs." italic/></em></h1>
-    <p>Discover lighting, switches and reliable electrical essentials for every room, project and everyday need.</p>
-    <div className="hero-actions"><Link className="button dark" href="/shop">Shop all products <ArrowUpRight size={16}/></Link><Link className="textlink" href="#popular">Explore best sellers <ArrowRight size={15}/></Link></div>
+    <h1 aria-label={ar?"كل ما تحتاجه مساحتك":"Everything your space needs."}>{ar?"كل ما تحتاجه مساحتك":<><RevealLine text="Everything your"/><br/><em><RevealLine text="space needs." italic/></em></>}</h1>
+    <p>{ar?"اكتشف الإضاءة والمفاتيح والمستلزمات الكهربائية الموثوقة لكل غرفة ومشروع واحتياج يومي.":"Discover lighting, switches and reliable electrical essentials for every room, project and everyday need."}</p>
+    <div className="hero-actions"><Link className="button dark" href="/shop">{ar?"تسوق كل المنتجات":"Shop all products"} <ArrowUpRight size={16}/></Link><Link className="textlink" href="#popular">Explore best sellers <ArrowRight size={15}/></Link></div>
    </div>
    <div className="shop-hero-image"><img src="https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?auto=format&fit=crop&w=1400&q=85" alt="Modern pendant lighting in an interior"/><div className="shop-hero-caption"><span>VOLT / LIGHTING</span><b>Find the right light for your space.</b></div></div>
   </section>
@@ -60,8 +63,8 @@ export default function Home() {
    <div className="commerce-product-grid">{featured.map(p=><article className="commerce-product" key={p.id}>
     <Link href={`/product/${p.id}`} className="commerce-product-image"><img src={`https://images.unsplash.com/${p.image}?auto=format&fit=crop&w=850&q=85`} alt={p.name}/>{p.badge&&<span className="tag">{p.badge}</span>}</Link>
     <button className={saved.includes(p.id)?"heart saved":"heart"} aria-label="Save product" onClick={()=>setSaved(s=>s.includes(p.id)?s.filter(x=>x!==p.id):[...s,p.id])}><Heart size={17} fill={saved.includes(p.id)?"currentColor":"none"}/></button>
-    <div className="commerce-product-info"><div><small>{p.category}</small><Link href={`/product/${p.id}`}><h3>{p.name}</h3></Link><p>{p.shortDescription}</p></div><b>{formatEGP(p.price)}</b></div>
-    <button className="commerce-add" onClick={()=>addToCart(p.id)}>Add to cart <span>+</span></button>
+    <div className="commerce-product-info"><div><small>{p.category}</small><Link href={`/product/${p.id}`}><h3>{p.name}</h3></Link><p>{p.shortDescription}</p></div><b>{format(price(p.id,p.price))}</b></div>
+    <button className="commerce-add" onClick={()=>addToCart(p.id)}>{ar?"أضف إلى السلة":"Add to cart"} <span>+</span></button>
    </article>)}</div>
    <p className="catalogue-disclaimer">Demo catalogue: displayed products, prices and technical details are sample content and must be replaced with verified stock and supplier data before accepting orders.</p>
   </div></section>
