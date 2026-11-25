@@ -1,6 +1,5 @@
 "use client";
 import {createContext,useContext,useEffect,useMemo,useState, type ReactNode} from "react";
-import {products as catalogue} from "../lib/products";
 type Currency="EGP"|"SYP"; type Language="en"|"ar";
 type PriceMap=Record<string,{EGP:number;SYP:number}>;
 type StoreContextValue={currency:Currency;language:Language;prices:PriceMap;setCurrency:(v:Currency)=>void;setLanguage:(v:Language)=>void;savePrices:(id:string,prices:{EGP:number;SYP:number})=>void;price:(id:string,defaultPrice:number)=>number;format:(amount:number)=>string};
