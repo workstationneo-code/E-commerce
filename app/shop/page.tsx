@@ -1,13 +1,12 @@
 'use client';
 import {useMemo,useState} from "react";
-import {useSearchParams} from "next/navigation";
 import Link from "next/link";
 import {Search,ShoppingBag,SlidersHorizontal} from "lucide-react";
 import {products,categories,formatEGP} from "../../lib/products";
 import {addToCart} from "../../lib/cart";
 export default function Shop(){
- const params=useSearchParams(); const initial=params.get("category")||"All products";
- const [category,setCategory]=useState(initial); const [query,setQuery]=useState(""); const [sort,setSort]=useState("featured");
+ const [category,setCategory]=useState("All products");
+ useState(()=>{if(typeof window!=="undefined"){const value=new URLSearchParams(window.location.search).get("category");if(value)setCategory(value)}}); const [query,setQuery]=useState(""); const [sort,setSort]=useState("featured");
  const shown=useMemo(()=>{let list=products.filter(p=>(category==="All products"||p.category===category)&&(`${p.name} ${p.category} ${p.shortDescription}`.toLowerCase().includes(query.toLowerCase())));if(sort==="price-low")list=[...list].sort((a,b)=>a.price-b.price);if(sort==="price-high")list=[...list].sort((a,b)=>b.price-a.price);if(sort==="name")list=[...list].sort((a,b)=>a.name.localeCompare(b.name));return list},[category,query,sort]);
  return <main className="store-page"><header className="header wrap commerce-header"><Link className="logo" href="/">VOLT<span>.</span></Link><nav className="nav"><Link href="/shop">All products</Link><Link href="/shop?category=LED%20Bulbs">LED bulbs</Link><Link href="/shop?category=Decorative%20Lighting">Lighting</Link></nav><Link className="bag" href="/cart"><ShoppingBag size={17}/> Cart</Link></header>
  <section className="wrap catalogue-page"><div className="eyebrow">VOLT / ONLINE STORE</div><h1>Shop <em>products.</em></h1><p className="catalogue-intro">Browse electrical essentials, lighting and accessories by category.</p>
